@@ -1,9 +1,9 @@
-import sys
+#! /usr/bin/python
 import time
 import hashlib
 import json
 import requests
-
+import sys
 headers_UA = {
     'User-Agent': 'Mozilla/5.0 (Linux; Android 10; Mi 10 Build/QKQ1.191117.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/83.0.4103.106 Mobile Safari/537.36'
 }
@@ -19,8 +19,8 @@ nick_name = ''
 token = ""
 log = ""
 r = ""
-SERVER_CHAN_KEY = ''
 or_path = '/'.join(sys.argv[0].split('/')[:-1])
+SERVER_CHAN_KEY = ''
 
 
 def server_chan():
@@ -100,15 +100,15 @@ def sign_in():
     response = r.post(
         url, headers=Headers.update(headers_UA))
     if "已经签到" in response.text:
-        log += '\n- [x] 签到'
+        log += '\n签到 √'
         printf("已经签到")
     elif 'APP' in response.text:
-        log += '\n- [ ] 签到 (请使用APP)'
+        log += '\n-签到 ×(请使用APP)'
         printf("使用APP")
     elif '签到' in response.text:
-        log += '\n- [x] 签到'
+        log += '\n签到 √'
     else:
-        log += '\n- [ ] 签到（未知错误）'
+        log += '\n签到 ×（未知错误）===>'+response.text
 
 
 def water():
@@ -119,7 +119,9 @@ def water():
     response = r.get(
         url, headers=headers_com.update(headers_UA))
     if '已经领取' == json.loads(response.text[2:-1])["errmsg"]:
-        log += '\n- [x] 领取0.7热水'
+        log += '\n领取0.7热水 √'
+    else:
+        log += '\n领取0.7热水 ×'
     printf(json.loads(response.text[2:-1])["errmsg"])
 
 
@@ -135,7 +137,11 @@ def main():
         user_name = user_info[index]["user_name"]
         passwd = user_info[index]["passwd"]
         school_code = user_info[index]["school_code"]
-        set_token_and_nickname(school_code, user_name, passwd)
+        try:
+            set_token_and_nickname(school_code, user_name, passwd)
+        except:
+            log += '\n\n'+user_name+'用户或者密码错误\n'
+            continue
         printf(nick_name)
         log += '\n###'+nick_name
         set_cookies()
