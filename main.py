@@ -18,7 +18,7 @@ nick_name = ''
 token = ""
 log = ""
 r = ""
-SERVER_CHAN_KEY = 'https://sc.ftqq.com/SCU121621Tc8fee35f7b29cb69bf08961d7a713b805f9a716c257d9.send'
+SERVER_CHAN_KEY = ''
 
 
 def server_chan():
@@ -34,12 +34,6 @@ def server_chan():
 def printf(msg):
     if not SERVER_CHAN_KEY:
         print(msg)
-
-
-def save_data(user_info):
-    with open("user.json", 'w+') as f:
-        f.write(json.dumps(user_info, indent=4))
-    pass
 
 
 def load_data():
@@ -133,8 +127,8 @@ def main():
     if not status:
         print("请补全user.json中空缺内容")
         exit(1)
-    for index in user_info.keys():
-        print('{}/{}'.format(int(index)+1, len(user_info.keys())), end='\r')
+    for index in range(len(user_info)):
+        print('{}/{}'.format(int(index)+1, len(user_info)), end='\r')
         r = requests.session()
         user_name = user_info[index]["user_name"]
         passwd = user_info[index]["passwd"]
