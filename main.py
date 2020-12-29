@@ -1,3 +1,4 @@
+import sys
 import time
 import hashlib
 import json
@@ -19,6 +20,7 @@ token = ""
 log = ""
 r = ""
 SERVER_CHAN_KEY = ''
+or_path = '/'.join(sys.argv[0].split('/')[:-1])
 
 
 def server_chan():
@@ -38,8 +40,8 @@ def printf(msg):
 
 def load_data():
     import os
-    if os.path.exists("user.json"):
-        with open("user.json", 'r') as f:
+    if os.path.exists(or_path+"/user.json"):
+        with open(or_path+"/user.json", 'r') as f:
             data = f.read()
         return 1, json.loads(data)
     return 0, None
