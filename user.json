@@ -1,7 +1,16 @@
-[
-    {
-        "user_name": "xxxxxx",
+[{
+        "id_number": "xxxxxx",
         "passwd": "xxxxx",
-        "school_code": "xx"
+        "school_code": "10"
+    },
+    {
+        "student_id": "xxxxx",
+        "passwd": "xxxxx",
+        "school_code": "10"
+    },
+    {
+        "phone_number": "xxxxxxxxxxx",
+        "passwd": "xxxxx",
+        "school_code": "10"
     }
 ]

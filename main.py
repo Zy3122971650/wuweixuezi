@@ -21,6 +21,7 @@ log = ""
 r = ""
 or_path = '/'.join(sys.argv[0].split('/')[:-1])
 SERVER_CHAN_KEY = ''
+SERVER_URL = 'https://sc.ftqq.com/{}.send'
 
 
 def server_chan():
@@ -30,7 +31,7 @@ def server_chan():
         'desp': log
     }
     requests.post(
-        SERVER_CHAN_KEY, data=data)
+        SERVER_URL.format(SERVER_CHAN_KEY), data=data)
 
 
 def printf(msg):
@@ -38,21 +39,44 @@ def printf(msg):
         print(msg)
 
 
-def load_data():
+def load_data() -> dict:
     import os
     if os.path.exists(or_path+"/user.json"):
         with open(or_path+"/user.json", 'r') as f:
-            data = f.read()
-        return 1, json.loads(data)
+            data: dict = json.load(f)
+        return 1, data
     return 0, None
 
 
-def set_token_and_nickname(school_code, user_name, passwd):
+def set_token_and_nickname(school_code, user_name, passwd, login_type):
+    """登录获取token和名称
+
+    Args:
+        school_code (string): [学校代码]
+        user_name (string): [登录用的账号]
+        passwd (string): [密码]
+        login_type (string): [选用的登录方式]
+        style (string): [选用的登录方式]
+    """
     global nick_name, token
+    id_number = ''
+    student_id = ''
+    phone_number = ''
+    style = ''
+    if login_type == 'phone_number':
+        phone_number = user_name
+        style = '3'
+    elif login_type == 'id_number':
+        id_number = user_name
+        style = '1'
+    elif login_type == 'student_id':
+        student_id = user_name
+        style = '2'
+
     sign, time_ = get_sign_time()
-    url = "https://www.wuweixuezi.com/app/index.php?i=2&j=3&c=entry&m=water&do=appapi&op=user.login&jsoncallback=1&time={time}&sign={sign}&style=1&schoolID={school}&identityID={id}&realname=&studentID=&mobile=&password={passwd}&wxUserToken=&_={time}"
+    url = "https://www.wuweixuezi.com/app/index.php?i=2&j=3&c=entry&m=water&do=appapi&op=user.login&jsoncallback=1&time={time}&sign={sign}&style={style}&schoolID={school}&identityID={id_number}&realname=&studentID={student_id}&mobile={phone_number}&password={passwd}&wxUserToken=&_={time}"
     url = url.format(sign=sign, school=school_code, time=time_,
-                     id=user_name, passwd=passwd)
+                     passwd=passwd, id_number=id_number, phone_number=phone_number, student_id=student_id, style=style)
     response = r.get(url, headers=headers_com.update(headers_UA))
     nick_name = json.loads(response.text[2:-1])['errmsg']['nickname']
     token = json.loads(response.text[2:-1])['errmsg']['token']
@@ -125,7 +149,7 @@ def water():
     printf(json.loads(response.text[2:-1])["errmsg"])
 
 
-def main():
+def main_handler():
     global r, log
     status, user_info = load_data()
     if not status:
@@ -134,11 +158,10 @@ def main():
     for index in range(len(user_info)):
         print('{}/{}'.format(int(index)+1, len(user_info)), end='\r')
         r = requests.session()
-        user_name = user_info[index]["user_name"]
-        passwd = user_info[index]["passwd"]
-        school_code = user_info[index]["school_code"]
+        school_code, user_name, passwd, login_type = get_login_params(
+            user_info, index)
         try:
-            set_token_and_nickname(school_code, user_name, passwd)
+            set_token_and_nickname(school_code, user_name, passwd, login_type)
         except:
             log += '\n\n'+user_name+'用户或者密码错误\n'
             continue
@@ -151,4 +174,21 @@ def main():
     server_chan()
 
 
-main()
+def get_login_params(user_info, index):
+    current_user_info: dict = user_info[index]
+    keys = current_user_info.keys()
+    if 'phone_number' in keys:
+        login_type = 'phone_number'
+        user_name = current_user_info['phone_number']
+    elif 'id_number' in keys:
+        login_type = 'id_number'
+        user_name = current_user_info['id_number']
+    elif 'student_id' in keys:
+        login_type = 'student_id'
+        user_name = current_user_info['student_id']
+    passwd = user_info[index]["passwd"]
+    school_code = user_info[index]["school_code"]
+    return school_code, user_name, passwd, login_type
+
+
+main_handler()
