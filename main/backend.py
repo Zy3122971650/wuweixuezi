@@ -33,8 +33,8 @@ def save():
         data['id_number'], data['phone_number'], data['password'], data['school_code'], data['style'])
     user_id = user_info['id']
 
-    db = core.dynamodb(region_name='ap-northeast-1', aws_access_key_id='AKIAXKJWP4FBITV5NTMH',
-                       aws_secret_access_key='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')
+    db = core.dynamodb(region_name=None, aws_access_key_id=None,
+                       aws_secret_access_key=None)
 
     user_is_exist_flag = db.check_user(user_id)
     if user_is_exist_flag == 1:
