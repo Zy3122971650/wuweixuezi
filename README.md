@@ -69,6 +69,12 @@ db = core.dynamodb(region_name=None, aws_access_key_id=None,
 ```
 我们使用了ServerChan来推送消息，以监控服务有没有按时工作。如果你也需要的话，参见[Server酱官网](https://sct.ftqq.com/)，把你的`SendKey`填入`server_chan_key`。
 
+见`backend.py`
+```python
+db = core.dynamodb(region_name=None, aws_access_key_id=None,
+                       aws_secret_access_key=None)
+
+```
 `region_name`是你使用的dynamodb数据库所在的区，`aws_access_key_id和aws_secret_access_key`你需要在亚马逊的`IAM`服务里申请。
 
 ### 部署
